@@ -1,15 +1,22 @@
-import inspect
+import src.main.scripts.functions.core.core as myCore
+import src.main.scripts.functions.inOut as inOut
 import sys
-from src.main.scripts.functions.core.myExceptions import NoAccessFromFile
-import src.main.scripts.functions.core.core as core
 
 if __name__ == '__main__':
-    core.coreInitConfig(str(__file__))
+    sys.path[0]
+    # Preparamos la configuración inicial
+    myCore.coreInitConfig(str(__file__))
 
-    logger = core.getLogger("salu2")
-    logger.error("AAAAa")
+    # Recogemos el logger y el configParser
+    config = myCore.readConfig()
+    logger = myCore.getLogger("main")
 
-    config = core.readConfig()
-    print(config["DEFAULT"]["os_name"])
+    logger.info("Inicio programa")
 
-    print("OK")
+    # Descargamos el dataset
+    kaggleUrls = [
+        "https://www.kaggle.com/datasets/lava18/google-play-store-apps?resource=download",
+        "https://www.kaggle.com/datasets/lava18/google-play-store-apps?resource=download&s"
+        "elect=googleplaystore_user_reviews.csv"]  # Url de datasets
+    targetDir = config["DEFAULT"]["res_path"] + "/in/kaggleData/"  # Ruta donde vamos a guardar los datasets
+    inOut.getKaggleDataset(kaggleUrls, targetDir)

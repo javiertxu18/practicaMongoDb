@@ -1,6 +1,7 @@
 # Mios
 .idea
 config.ini
+src/main/res/in/kaggleData/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,6 +1,6 @@
 import logging, configparser, os, sys
 from multipledispatch import dispatch
-from src.main.scripts.functions.core.myExceptions import NoAccessFromFile, NoBinFolderFound
+from src.main.scripts.functions.core.myExceptions import NoAccessFromFile, NoBinFolderFound, CoreConfigError
 
 
 # -------------------------------------- coreInitConfig Inicio ---------------------------------
@@ -16,20 +16,28 @@ def coreInitConfig(initPath):
         - Logger: Una herramienta que nos permite guardar un log de lo que vayamos necesitando.
 
     :return:
+        - True: Si todo_ ha ido bien
+        - False: Si ha habido algún problema
     """
+    try:
+        # Controlamos el acceso a la función, para que solo se ejecute en los .py que queramos
+        accessControl(initPath)
 
-    # Controlamos el acceso a la función, para que solo se ejecute en los .py que queramos
-    accessControl(initPath)
+        # Preparamos rootPath
+        rootPath = setRootPath(initPath)
 
-    # Preparamos rootPath
-    rootPath = setRootPath(initPath)
+        # Preparamos el ConfigParser
+        initConfigParser(rootPath)
 
-    # Preparamos el ConfigParser
-    initConfigParser(rootPath)
+        # Iniciamos el logger
+        loggerInit = getLogger("INIT")
+        loggerInit.info("Inicio de logger.")
 
-    # Iniciamos el logger
-    loggerInit = getLogger("INIT")
-    loggerInit.info("Inicio de logger.")
+        # Retorna true porque todo_ ha ido bien
+        return True
+    except Exception as e:
+        # Si salta alguna excepción, mostrar error
+        raise CoreConfigError(e)
 
 
 @dispatch(str)
@@ -40,7 +48,7 @@ def accessControl(initPath):
     fichero con permisos de ejecución, y el segundo, el nombre del fichero
     """
 
-    pyList = [["bin", "main.py"], ["scripts", "+.py"]]
+    pyList = [["bin", "main.py"]]
     if str(initPath).split(os.sep)[-2:] not in pyList:
         raise NoAccessFromFile(f"Solo puedes ejecutar esta función desde los ficheros con acceso.")
 
@@ -64,6 +72,27 @@ def setRootPath(mainPath):
         return rootPath
     except:
         raise NoBinFolderFound("No se ha encontrado la carpeta 'bin' en la ruta " + str(mainPath))
+
+@dispatch()
+def getRootPath():
+    """
+    Devuelve el root path de todo_ aquel programa que se haya ejecutado desde dentro de bin
+    :return:
+        - String: La ruta de la carpeta del proyecto
+    """
+    try:
+        mainPath = sys.path[0]
+        # Sacamos la posición de la carpeta bin de la lista
+        binIndex = int(mainPath.split(os.sep).index("bin"))
+
+        # Sacamos la ruta root y la retornamos
+        rootPath = str(os.sep).join(mainPath.split(os.sep)[:binIndex])
+
+        return rootPath
+    except:
+        # Si no hay un bin en la ruta de sys.path[0], retornamos la variable en sí
+        return sys.path[0]
+        pass
 
 
 @dispatch(str)
@@ -117,8 +146,8 @@ def readConfig():
         # Retornamos el configParser
         return conf
     except Exception as e:
-        logger = getLogger("inOutFunctions")
-        logger.error(str(e))
+        print("Error preparando el ConfigParser.")
+        exit(1)
         return False
 
 
@@ -133,14 +162,23 @@ def setLogger():
         - exit(1): Si ha habido algún error
     """
     try:
+
+        try:
+            config = readConfig()
+            logPath = config["DEFAULT"]["root_path"] + os.sep + ".log"
+        except:
+            # La primera ejecución pasará por aquí
+            logPath = getRootPath() + os.sep + ".log"
+
         logging.basicConfig(
-            filename=sys.path[0] + "/.log",  # Fichero donde vamos a guardar la info
+            filename=logPath,  # Fichero donde vamos a guardar la info
             filemode="a",  # Modo en el que vamos a guardar la info (append)
             format='%(asctime)s %(levelname)s(%(name)s) '
                    '%(filename)s:line(%(lineno)s) '
                    '-> %(message)s',  # Formato de la info
             level=logging.INFO,  # Level por defecto
             datefmt='%Y-%m-%d %H:%M:%S')  # Formato de fecha
+
         return True
     except Exception as e:
         print("Error configurando el logger: " + str(e))
@@ -167,7 +205,7 @@ def getLogger(name):
     # Preparamos el logger
     logger = logging.getLogger(str(name))
     setLogger()
-    logger.setLevel(10)
+    logger.setLevel(10)  # Para que se guarde todo_ en el .log
 
     # Añadimos un Handler al logger para que muestre por consola los mensajes
     console = logging.StreamHandler()
@@ -175,8 +213,8 @@ def getLogger(name):
 
     # Preparamos el formato del Handler y lo añadimos
     formato = logging.Formatter('%(asctime)s %(levelname)s(%(name)s) '
-                               '%(filename)s:line(%(lineno)s) '
-                               '-> %(message)s')
+                                '%(filename)s:line(%(lineno)s) '
+                                '-> %(message)s')
     console.setFormatter(formato)
 
     # Añadimos el handler al logger y lo retornamos

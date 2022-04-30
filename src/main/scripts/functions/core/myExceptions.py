@@ -27,3 +27,30 @@ class NoBinFolderFound(Exception):
 
     def __str__(self):
         return self.message
+
+
+class NoKaggleFound(Exception):
+    """
+    Causa de la Excepción:
+    Cuando se intenta descargar un kaggle que no existe
+    """
+
+    def __init__(self, kaggleUrl):
+        self.message = "No se ha encontrado el kaggle en la ruta '" + str(kaggleUrl) + \
+                       "'. Comprueba inOut.getKaggleDatasets()"
+
+    def __str__(self):
+        return self.message
+
+
+class CoreConfigError(Exception):
+    """
+    Causa de la Excepción:
+    Cuando se intenta descargar un kaggle que no existe
+    """
+
+    def __init__(self, desc):
+        self.message = "Ha habido un error configurando el core: " + str(desc)
+
+    def __str__(self):
+        return self.message
