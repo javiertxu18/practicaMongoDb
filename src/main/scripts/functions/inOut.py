@@ -1,6 +1,7 @@
 import src.main.scripts.functions.core.core as myCore
 from src.main.scripts.functions.core.myExceptions import NoKaggleFound
 from multipledispatch import dispatch
+import sys
 
 # preparamos el logger
 logger = myCore.getLogger("inOut")
@@ -35,6 +36,7 @@ def getKaggleDataset(kaggleUrl, targetDir):
             # Descargamos los datasets
             od.download(str(kaggleUrl), force=True, data_dir=str(targetDir))
             logger.debug("Dataset descargado correctamente.")
+
     except ModuleNotFoundError:
         raise NoKaggleFound(str(activeKaggle))
 

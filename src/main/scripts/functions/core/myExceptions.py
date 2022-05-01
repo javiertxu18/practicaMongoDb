@@ -29,6 +29,19 @@ class NoBinFolderFound(Exception):
         return self.message
 
 
+class ProjectPathNotFound(Exception):
+    """
+    Causa de la Excepción:
+    No se ha encontrado la ruta del proyecto
+    """
+
+    def __init__(self, msg):
+        self.message = msg
+
+    def __str__(self):
+        return self.message
+
+
 class NoKaggleFound(Exception):
     """
     Causa de la Excepción:

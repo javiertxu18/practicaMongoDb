@@ -1,10 +1,10 @@
-import logging, configparser, os, sys
+import logging, configparser, os
 from multipledispatch import dispatch
-from src.main.scripts.functions.core.myExceptions import NoAccessFromFile, NoBinFolderFound, CoreConfigError
+from src.main.scripts.functions.core.myExceptions import NoAccessFromFile, CoreConfigError, \
+    ProjectPathNotFound
 
 
 # -------------------------------------- coreInitConfig Inicio ---------------------------------
-
 @dispatch(str)
 def coreInitConfig(initPath):
     """
@@ -23,15 +23,12 @@ def coreInitConfig(initPath):
         # Controlamos el acceso a la función, para que solo se ejecute en los .py que queramos
         accessControl(initPath)
 
-        # Preparamos rootPath
-        rootPath = setRootPath(initPath)
-
         # Preparamos el ConfigParser
-        initConfigParser(rootPath)
+        initConfigParser()
 
-        # Iniciamos el logger
+        # Iniciamos el logger para comprobar que todo_ ha ido bien
         loggerInit = getLogger("INIT")
-        loggerInit.info("Inicio de logger.")
+        loggerInit.info("Iniciode  logger.")
 
         # Retorna true porque todo_ ha ido bien
         return True
@@ -53,50 +50,32 @@ def accessControl(initPath):
         raise NoAccessFromFile(f"Solo puedes ejecutar esta función desde los ficheros con acceso.")
 
 
-@dispatch(str)
-def setRootPath(mainPath):
-    """
-    Prepara el valor de la variable de sys.path[0] para que sea la ruta absoluta del proyecto.
-    :return:
-    """
-    try:
-        # Sacamos la posición de la carpeta bin de la lista
-        binIndex = int(os.path.abspath(os.path.dirname(mainPath)).split(os.sep).index("bin"))
-
-        # Sacamos la ruta root y la retornamos
-        rootPath = str(os.sep).join(os.path.abspath(os.path.dirname(mainPath)).split(os.sep)[:binIndex])
-
-        # Actualizamos el valor de sys.path[0] con el path absoluto del proyecto
-        sys.path.insert(0, rootPath)
-
-        return rootPath
-    except:
-        raise NoBinFolderFound("No se ha encontrado la carpeta 'bin' en la ruta " + str(mainPath))
-
 @dispatch()
 def getRootPath():
     """
     Devuelve el root path de todo_ aquel programa que se haya ejecutado desde dentro de bin
     :return:
-        - String: La ruta de la carpeta del proyecto
+        - String: La ruta absoluta de la carpeta del proyecto
     """
     try:
-        mainPath = sys.path[0]
-        # Sacamos la posición de la carpeta bin de la lista
-        binIndex = int(mainPath.split(os.sep).index("bin"))
+        mainPath = str(os.getcwdb().decode('utf-8'))
+        try:
+            # Sacamos la posición de la carpeta bin de la lista
+            binIndex = int(mainPath.split(os.sep).index("bin"))
+        except:
+            # En caso de no encontrar la carpeta bin, buscamos la src
+            binIndex = int(mainPath.split(os.sep).index("src"))
 
         # Sacamos la ruta root y la retornamos
         rootPath = str(os.sep).join(mainPath.split(os.sep)[:binIndex])
 
         return rootPath
-    except:
-        # Si no hay un bin en la ruta de sys.path[0], retornamos la variable en sí
-        return sys.path[0]
-        pass
+    except Exception as e:
+        raise ProjectPathNotFound("No se ha encontrado la ruta del proyecto en " + str(os.getcwdb().decode('utf-8')) +
+                                  ". Error: " + str(e))
 
 
-@dispatch(str)
-def initConfigParser(rootPath, logger_level=30):
+def initConfigParser(rootPath=getRootPath(), logger_level=30):
     """
     Configuración inicial de el ConfigParser para poder leer y escribir en el fichero config.ini
     :parameters:
@@ -131,7 +110,6 @@ def initConfigParser(rootPath, logger_level=30):
         exit(1)
 
 
-@dispatch()
 def readConfig():
     """
     Devuelve el ConfigParser para poder trabajar con el fichero config.ini
@@ -142,7 +120,7 @@ def readConfig():
         # Preparamos el configParser
         conf = configparser.ConfigParser()
         # Leemos el fichero config.ini
-        conf.read(sys.path[0] + os.sep + "config.ini")
+        conf.read(getRootPath() + os.sep + "config.ini")
         # Retornamos el configParser
         return conf
     except Exception as e:
