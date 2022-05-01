@@ -67,6 +67,24 @@ class Cleaner:
 
     # ------------------ Target Fin -------------------
 
+    # ------------------ toStrign Inicio -------------------
+
+    def toString(self):
+        return "Paths: " + str(self.lstTargets)
+
+    # ------------------ Target Fin -------------------
+
+    @dispatch()
     def __init__(self):
         # Variables
         self.lstTargets = []
+
+    @dispatch(str)
+    def __init__(self, strTarget):
+        # Variables
+        self.lstTargets = [str(strTarget)]
+
+    @dispatch(list)
+    def __init__(self, lstTarget):
+        # Variables
+        self.lstTargets = lstTarget

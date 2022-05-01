@@ -1,7 +1,80 @@
 # practicaMongoDb
-Python3 con MongoDB
+Python3 con MongoDB(3.6.23)
 
-## Normas
+Herramientas utilizadas:
+
+- Python 3
+- MongoDB (v3.6.23)
+
+Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
+
+- multipledispatch~=0.6.0
+- opendatasets~=0.1.22
+
+## Estructura del proyecto
+
+La estructura del proyecto está pensada para ser usada en la mayor cantidad de escenarios posibles.
+
+**(Nota: Esta no es la estructura final, está en desarrolo)**
+
+    src/
+        main/
+            # Parte principal del programa
+            res/
+                # Aquí van los recursos del programa
+                in/
+                    # Aquí van los recursos que se importan
+                    kaggleData/
+                        google-play-store-apps/
+                            googleplaystore.csv
+                            googleplaystore_user_reviews.csv
+                            license.txt
+                out/
+                    # Aquí van los recursos que se exportan
+            scripts/    
+                # Aquí van los scripts del programa
+                functions/
+                    core/
+                        # Aquí van las funciones core
+                        core.py
+                        myExceptions.py
+                    inOut/
+                        # Aquí van las funciones de importación y exportación
+                        in_/
+                            # Aquí van las funciones que importen recursos
+                            kaggle.py
+                        out_/
+                            # Aquí van las funciones que exporten recursos
+                objects/
+                    # Objetos utilizados en el programa
+                    limpieza/
+                        # Objetos de limpieza
+                        Cleaner.py
+        test/
+            # Parte de testing del programa
+
+
+Código para sacar el esquema del proyecto (Copiar y pegar en /bin/main.py, después de "_myCore.coreInitConfig()_"):
+
+    import os
+
+    config = myCore.readConfig()  # Para trabajar con config.ini
+
+    def list_files(startpath):
+        for root, dirs, files in os.walk(startpath):
+            level = root.replace(startpath, '').count(os.sep)
+            indent = ' ' * 4 * (level)
+            print('{}{}/'.format(indent, os.path.basename(root)))
+            subindent = ' ' * 4 * (level + 1)
+            for f in files:
+                print('{}{}'.format(subindent, f))
+
+    list_files(config["DEFAULT"]["root_path"] + os.sep + "src")
+
+
+## Enunciado de la práctica
+
+### Normas
 1. La realización de la práctica es obligatoria y supondrá el 50 % de la nota final de
 prácticas de la asignatura.
 2. La práctica se realizará en grupos de 2 a 3 personas. Excepcionalmente puede
@@ -20,7 +93,7 @@ indicando los pasos a seguir para su ejecución completa.
 caso, simplemente indicará exactamente el subconjunto del que ha partido y cómo lo
 ha generado (dando los detalles para poder reproducirlo).
 
-## Contexto
+### Contexto
 La fuente de datos es una recopilación, vía Web Scrapping, de diez mil registros
 conseguidos a través de Google Play Store Apps de Android Market. La información se
 almacena en https://www.kaggle.com/datasets/lava18/google-play-store-apps y consiste en
@@ -33,7 +106,7 @@ Si nos fijamos bien, habrá campos que se deban transformar en Python para que n
 resulte más fácil a la hora de realizar las queries. Además, se tendrá que pensar si esta
 información debe incluirse en una colección o en dos y explicar el porqué de esta decisión.
 
-## Desarrollo de práctica
+### Desarrollo de práctica
 1. Procesamiento de los datos
 Habrá que descargar el fichero de la URL anteriormente nombrada y realizar transformaciones
 en Python como modificar los ‘M’ de los números para que sean millones, las comas, espacios,

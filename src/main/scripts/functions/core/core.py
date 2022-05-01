@@ -124,7 +124,7 @@ def readConfig():
         # Retornamos el configParser
         return conf
     except Exception as e:
-        print("Error preparando el ConfigParser.")
+        print("Error preparando el ConfigParser. Error: " + str(e))
         exit(1)
         return False
 
