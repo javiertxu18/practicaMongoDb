@@ -10,12 +10,13 @@ Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
 
 - multipledispatch~=0.6.0
 - opendatasets~=0.1.22
+- pandas~=1.4.2
 
 ## Estructura del proyecto
 
 La estructura del proyecto está pensada para ser usada en la mayor cantidad de escenarios posibles.
 
-**(Nota: Esta no es la estructura final, está en desarrolo)**
+**(Nota: Esta no es la estructura final, está en desarrollo)**
 
     src/
         main/
@@ -23,12 +24,12 @@ La estructura del proyecto está pensada para ser usada en la mayor cantidad de 
             res/
                 # Aquí van los recursos del programa
                 in/
-                    # Aquí van los recursos que se importan
-                    kaggleData/
-                        google-play-store-apps/
-                            googleplaystore.csv
-                            googleplaystore_user_reviews.csv
-                            license.txt
+                    raw/
+                        # Aquí van los recursos que se importan
+                        kaggleData/
+                            # Aquí estarán los csv descargados de Kaggle
+                    standarised/
+                        # Aquí van los csv limpios
                 out/
                     # Aquí van los recursos que se exportan
             scripts/    
