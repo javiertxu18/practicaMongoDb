@@ -40,7 +40,7 @@ def getKaggleDataset(kaggleUrl, targetDir):
         config = myCore.readConfig()  # Preparamos el config
         config["kaggle"] = {}  # Creamos un nueva sección en el fichero config
         config["kaggle"]["base_path"] = config["DEFAULT"]["root_path"] + os.sep + \
-                                        os.sep.join(["src", "main", "res", "in", "kaggleData"])
+                                        os.sep.join(["src", "main", "res", "in", "raw", "kaggleData"])
 
         # Vamos añadiendo las rutas kaggles de cada carpeta
         for folder in os.listdir(config["kaggle"]["base_path"]):
@@ -48,6 +48,10 @@ def getKaggleDataset(kaggleUrl, targetDir):
                 if file.split(".")[1] == "csv":
                     config["kaggle"][folder + "[]" + str(file.split(".")[0])] = config["kaggle"]["base_path"] + \
                                                                                   os.sep + os.sep.join([folder, file])
+
+        # Añadimos una ruta donde se van a guardar los kaggle estandarizados
+        config["kaggle"]["standarised_path"] = config["DEFAULT"]["root_path"] + os.sep + \
+                                        os.sep.join(["src", "main", "res", "in", "standarised"])
 
         # Sobreescribimos el fichero y guardamos la info nueva
         with open(config['DEFAULT']['config_path'], 'w') as configfile:

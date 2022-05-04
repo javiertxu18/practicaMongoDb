@@ -1,6 +1,9 @@
 import src.main.scripts.functions.core.core as myCore
 import src.main.scripts.functions.inOut.in_.kaggle as inKaggle
 from src.main.scripts.objects.limpieza.Cleaner import Cleaner
+import src.main.scripts.functions.limpieza.limpieza as limp
+import os
+
 
 if __name__ == '__main__':
     # Preparamos la configuración inicial
@@ -19,7 +22,7 @@ if __name__ == '__main__':
         "https://www.kaggle.com/datasets/lava18/google-play-store-apps?select=googleplaystore.csv",
         "https://www.kaggle.com/datasets/lava18/google-play-store-apps?resource=download&s"
         "elect=googleplaystore_user_reviews.csv"]  # Url de datasets
-    targetDir = config["DEFAULT"]["res_path"] + "/in/kaggleData/"  # Ruta donde vamos a guardar los datasets
+    targetDir = config["DEFAULT"]["res_path"] + os.sep + str(os.sep).join(["in", "raw", "kaggleData"])   # Ruta de guardado
     inKaggle.getKaggleDataset(kaggleUrls, targetDir)
 
     # ------------------ Descargar Datasets Fin -------------------
@@ -35,9 +38,12 @@ if __name__ == '__main__':
 
     cleaner = Cleaner(lstCsvPaths)  # Instanciamos la clase Cleaner
 
-    # ------------------ Limpieza de CSV Fin -------------------
+    # Llamamos a la función que limpia todos los CSV
+    cleaner.limpiarTodo()
 
-    print(cleaner.toString())
-    print(config["kaggle"]['google-play-store-apps[]googleplaystore'])
+    # Guardamos los dataframes en csv
+    cleaner.saveOnCsv(config["kaggle"]["standarised_path"] + os.sep)
+
+    # ------------------ Limpieza de CSV Fin -------------------
 
     logger.info("Fin programa")
