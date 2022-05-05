@@ -1,22 +1,33 @@
 # practicaMongoDb
 Python3 con MongoDB(3.6.23)
 
-Herramientas utilizadas:
+### Pre-requisitos
+
+Para que el programa funcione, necesitamos lo siguiente:
+
+- Un servidor de MongoDB escuchando para guardar la información. Se tiene que poder
+acceder sin necesidad de usuario ni contraseña. El programa te pide el host y el 
+ puerto una vez se haya ejecutado.
+- Internet, para descargar los datasets de kaggle.
+
+####Herramientas utilizadas:
 
 - Python 3
+- Pandas (v1.4.2)
 - MongoDB (v3.6.23)
 
-Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
+####Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
 
 - multipledispatch~=0.6.0
 - opendatasets~=0.1.22
 - pandas~=1.4.2
+- pymongo~=4.1.1
 
 ## Estructura del proyecto
 
 La estructura del proyecto está pensada para ser usada en la mayor cantidad de escenarios posibles.
 
-**(Nota: Esta no es la estructura final, está en desarrollo)**
+*Nota: La estructura se va **actualizando** con cada commit realizado.*
 
     src/
         main/
@@ -46,8 +57,14 @@ La estructura del proyecto está pensada para ser usada en la mayor cantidad de 
                             kaggle.py
                         out_/
                             # Aquí van las funciones que exporten recursos
+                    limpieza/
+                        # Aquí van las funciones relacionadas con la limpieza de datos
+                        limpieza.py
                 objects/
                     # Objetos utilizados en el programa
+                    db/
+                        # Objetos relacionados con las bases de datos
+                        ConnManager.py
                     limpieza/
                         # Objetos de limpieza
                         Cleaner.py

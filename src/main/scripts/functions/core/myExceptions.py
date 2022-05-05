@@ -1,6 +1,7 @@
 """
 Aquí guardaré mis propias excepciones, y podré importarlas y utilizarlas en diferentes .py
 """
+import pymongo
 
 
 class NoAccessFromFile(Exception):
@@ -64,6 +65,50 @@ class CoreConfigError(Exception):
 
     def __init__(self, desc):
         self.message = "Ha habido un error configurando el core: " + str(desc)
+
+    def __str__(self):
+        return self.message
+
+
+class ConnNotFound(Exception):
+    """
+    Causa de la Excepción:
+    No se ha encontrado el Id o Nombre de la conexión que estamos buscando.
+    """
+
+    def __init__(self, tipo):
+        if isinstance(tipo, int):
+            self.message = "No se ha encontrado la conexión con id " + str(tipo)
+        elif isinstance(tipo, str):
+            self.message = "No se ha encontrado la conexión con nombre " + str(tipo)
+        elif isinstance(tipo, pymongo.mongo_client.MongoClient):
+            self.message = "No se ha encontrado la conexión " + str(tipo)
+
+    def __str__(self):
+        return self.message
+
+
+class DuplicatedConnName(Exception):
+    """
+    Causa de la Excepción:
+    No se ha encontrado el Id o Nombre de la conexión que estamos buscando.
+    """
+
+    def __init__(self, nombre):
+        self.message = "Ya existe una conexión con nombre " + str(nombre) + " no pueden duplicarse."
+
+    def __str__(self):
+        return self.message
+
+
+class NotSameLenght(Exception):
+    """
+    Causa de la Excepción:
+    Los elementos no tiene el mismo len
+    """
+
+    def __init__(self, lstElem):
+        self.message = "Los siguientes elementos no tienen el mismo len(): " + str(lstElem)
 
     def __str__(self):
         return self.message

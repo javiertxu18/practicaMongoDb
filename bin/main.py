@@ -1,6 +1,8 @@
 import src.main.scripts.functions.core.core as myCore
 import src.main.scripts.functions.inOut.in_.kaggle as inKaggle
+import src.main.scripts.functions.inOut.out_.toMongo as mongoFunc
 from src.main.scripts.objects.limpieza.Cleaner import Cleaner
+from src.main.scripts.objects.db.ConnManager import ConnManager
 import src.main.scripts.functions.limpieza.limpieza as limp
 import os
 
@@ -22,7 +24,7 @@ if __name__ == '__main__':
         "https://www.kaggle.com/datasets/lava18/google-play-store-apps?select=googleplaystore.csv",
         "https://www.kaggle.com/datasets/lava18/google-play-store-apps?resource=download&s"
         "elect=googleplaystore_user_reviews.csv"]  # Url de datasets
-    targetDir = config["DEFAULT"]["res_path"] + os.sep + str(os.sep).join(["in", "raw", "kaggleData"])   # Ruta de guardado
+    targetDir = config["DEFAULT"]["res_path"] + os.sep + str(os.sep).join(["in", "raw", "kaggleData"])  # savePath
     inKaggle.getKaggleDataset(kaggleUrls, targetDir)
 
     # ------------------ Descargar Datasets Fin -------------------
@@ -37,13 +39,29 @@ if __name__ == '__main__':
     ])
 
     cleaner = Cleaner(lstCsvPaths)  # Instanciamos la clase Cleaner
-
-    # Llamamos a la función que limpia todos los CSV
-    cleaner.limpiarTodo()
-
-    # Guardamos los dataframes en csv
-    cleaner.saveOnCsv(config["kaggle"]["standarised_path"] + os.sep)
+    cleaner.limpiarTodo()  # Llamamos a la función que limpia todos los CSV
 
     # ------------------ Limpieza de CSV Fin -------------------
+
+    # ------------------ Carga de datos Inicio -------------------
+
+    # ------------------ Carga de datos en CSV Inicio
+
+    # Guardamos los dataframes en csv
+    cleaner.saveOnCsv(config["kaggle"]["standarised_path"] + os.sep) # Csv
+
+    # ------------------ Carga de datos en CSV Fin
+
+    # ------------------ Carga de datos en MongoDB Inicio
+
+    connData = mongoFunc.getConnInfo() # Preparamos los datos de conexión
+    connManager = ConnManager()  # Llamamos a nuestro objeto que gestiona las conexiones a bases de datos
+    conn = connManager.newConn_MongoDB(connData[0], host=connData[1], port=int(connData[2]))  # Creamos una conexión
+    mongoFunc.pandasToMongo(conn, cleaner.lstDf, ["googleStore", "googleStore"],
+                            ["googleplaystore", "googleplaystore_user_reviews"])  # Guardamos los dataframes
+
+    # ------------------ Carga de datos en MongoDB Fin
+
+    # ------------------ Carga de datos Fin -------------------
 
     logger.info("Fin programa")
