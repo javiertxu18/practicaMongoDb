@@ -10,15 +10,15 @@ acceder sin necesidad de usuario ni contraseña. El programa te pide el host y e
  puerto una vez se haya ejecutado.
 - Internet, para descargar los datasets de kaggle.
 
-Duración estimada de ejecución: 1 minuto 10 segundos.
+**Duración** estimada de ejecución: 1 minuto 10 segundos.
 
-####Herramientas utilizadas:
+#### Herramientas utilizadas:
 
 - Python 3
 - Pandas (v1.4.2)
 - MongoDB (v3.6.23)
 
-####Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
+#### Librerías python utilizadas (Se pueden  ver en "/requirements.txt"):
 
 - multipledispatch~=0.6.0
 - opendatasets~=0.1.22
