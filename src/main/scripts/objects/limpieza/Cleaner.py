@@ -25,7 +25,7 @@ class Cleaner:
         try:
             self.lstTargets = lst
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     @dispatch(str)
@@ -36,7 +36,7 @@ class Cleaner:
         try:
             self.lstTargets.append(newTarget)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     @dispatch(str)
@@ -47,7 +47,7 @@ class Cleaner:
         try:
             self.lstTargets.remove(str(name))
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     @dispatch(int)
@@ -58,7 +58,7 @@ class Cleaner:
         try:
             self.lstTargets.pop(int(indexPos))
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     @dispatch()
@@ -105,7 +105,6 @@ class Cleaner:
                 self.lstDfNames.append(str(x).split(os.sep)[-1].split(".csv")[0])
 
                 logger.debug("DataFrame guardado correctamente.")
-
 
             logger.debug("Los dataframes se han guardado correctamente.")
             # Una vez se han añadido los dataframes a la lista, devolvemos true

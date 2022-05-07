@@ -1,4 +1,7 @@
-import logging, configparser, os
+import configparser
+import logging
+import os
+
 from multipledispatch import dispatch
 from src.main.scripts.functions.core.myExceptions import NoAccessFromFile, CoreConfigError, \
     ProjectPathNotFound
@@ -28,7 +31,7 @@ def coreInitConfig(initPath):
 
         # Iniciamos el logger para comprobar que todo_ ha ido bien
         loggerInit = getLogger("INIT")
-        loggerInit.info("Iniciode  logger.")
+        loggerInit.info("Inicio de  logger.")
 
         # Retorna true porque todo_ ha ido bien
         return True
@@ -62,14 +65,13 @@ def getRootPath():
         try:
             # Sacamos la posición de la carpeta bin de la lista
             binIndex = int(mainPath.split(os.sep).index("bin"))
-        except:
+        except Exception:
             # En caso de no encontrar la carpeta bin, buscamos la src
             binIndex = int(mainPath.split(os.sep).index("src"))
 
         # Sacamos la ruta root y la retornamos
-        rootPath = str(os.sep).join(mainPath.split(os.sep)[:binIndex])
+        return str(os.sep).join(mainPath.split(os.sep)[:binIndex])
 
-        return rootPath
     except Exception as e:
         raise ProjectPathNotFound("No se ha encontrado la ruta del proyecto en " + str(os.getcwdb().decode('utf-8')) +
                                   ". Error: " + str(e))

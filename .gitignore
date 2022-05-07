@@ -3,6 +3,7 @@
 config.ini
 src/main/res/in/raw/kaggleData/*
 src/main/res/in/standarised/*
+src/main/res/out/resultConsultas/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

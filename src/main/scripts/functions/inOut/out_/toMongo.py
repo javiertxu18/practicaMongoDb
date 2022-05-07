@@ -49,8 +49,12 @@ def pandasToMongo(mongoConn, lstDf, lstDbNames, lstCollNames):
 
 # ------------------ Comprobaciones Inicio -------------------
 
+
 @dispatch()
 def getConnInfo():
+    # Actualizamos config
+    global config
+    config = myCore.readConfig()
     # Preparamos los datos de conexión a la base de datos mongoDb
     try:
         # Intentamos recuperar los datos del fichero config.ini
@@ -80,4 +84,3 @@ def getConnInfo():
         return [str(config["mongodb"]["name"]), str(config["mongodb"]["host"]), str(config["mongodb"]["port"])]
 
 # ------------------ Comprobaciones Fin -------------------
-

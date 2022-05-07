@@ -1,9 +1,9 @@
 import src.main.scripts.functions.core.core as myCore
 import src.main.scripts.functions.inOut.in_.kaggle as inKaggle
 import src.main.scripts.functions.inOut.out_.toMongo as mongoFunc
+import src.main.scripts.functions.consultas.consultasMongoDb as consultasMongo
 from src.main.scripts.objects.limpieza.Cleaner import Cleaner
 from src.main.scripts.objects.db.ConnManager import ConnManager
-import src.main.scripts.functions.limpieza.limpieza as limp
 import os
 
 
@@ -63,5 +63,11 @@ if __name__ == '__main__':
     # ------------------ Carga de datos en MongoDB Fin
 
     # ------------------ Carga de datos Fin -------------------
+
+    # ------------------ Consultas práctica Inicio -------------------
+
+    consultasMongo.consultasPracticas(conn)
+
+    # ------------------ Consultas práctica Fin -------------------
 
     logger.info("Fin programa")

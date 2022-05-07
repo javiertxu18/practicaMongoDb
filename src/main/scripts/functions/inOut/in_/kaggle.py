@@ -59,5 +59,3 @@ def getKaggleDataset(kaggleUrl, targetDir):
 
     except ModuleNotFoundError:
         raise NoKaggleFound(str(activeKaggle))
-
-

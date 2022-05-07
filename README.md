@@ -10,6 +10,8 @@ acceder sin necesidad de usuario ni contraseña. El programa te pide el host y e
  puerto una vez se haya ejecutado.
 - Internet, para descargar los datasets de kaggle.
 
+Duración estimada de ejecución: 1 minuto 10 segundos.
+
 ####Herramientas utilizadas:
 
 - Python 3
