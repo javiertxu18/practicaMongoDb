@@ -45,9 +45,14 @@ La estructura del proyecto está pensada para ser usada en la mayor cantidad de 
                         # Aquí van los csv limpios
                 out/
                     # Aquí van los recursos que se exportan
+                    resultConsultas/
+                        # Aquí se guardan las consultas realizadas en formato json
             scripts/    
                 # Aquí van los scripts del programa
                 functions/
+                    consultas/
+                        # Auí van las funciones relacionadas con las consultas a realizar
+                        consultasMongoDb.py
                     core/
                         # Aquí van las funciones core
                         core.py
