@@ -164,7 +164,7 @@ def consultasPracticas(mongoConn):
 
     # Preparamos consulta
     res = colStore.aggregate([
-        {"$addFields": {"Fecha separada": {"$split": ["$Last Updated", "-"]}}},
+        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
         {"$limit": 3}
     ])
     for x in res:
@@ -174,7 +174,7 @@ def consultasPracticas(mongoConn):
 
     # Guardamos consulta en carpeta de consultas
     cursor = colStore.aggregate([
-        {"$limit": 3}
+        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}}
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta4.json"))  # Llamamos a función.
 
@@ -190,8 +190,8 @@ def consultasPracticas(mongoConn):
 
     # Preparamos consulta
     res = colStore.aggregate([
-        {"$addFields": {"Fecha_separada": {"$split": ["$Last Updated", "-"]}}},
-        {"$group": {"_id": {"$arrayElemAt": ["$Fecha_separada", 0]}, "avg Precio": {"$avg": "$Price"}}},
+        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
+        {"$group": {"_id": "$Fecha Separada", "avg Precio": {"$avg": "$Price"}}},
         {"$limit": 3}
     ])
     for x in res:
@@ -201,8 +201,8 @@ def consultasPracticas(mongoConn):
 
     # Guardamos consulta en carpeta de consultas
     cursor = colStore.aggregate([
-        {"$addFields": {"Fecha_separada": {"$split": ["$Last Updated", "-"]}}},
-        {"$group": {"_id": {"$arrayElemAt": ["$Fecha_separada", 0]}, "avg Precio": {"$avg": "$Price"}}}
+        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
+        {"$group": {"_id": "$Fecha Separada", "avg Precio": {"$avg": "$Price"}}},
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta5.json"))  # Llamamos a función.
 
