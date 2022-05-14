@@ -72,12 +72,12 @@ def consultasPracticas(mongoConn):
     logger.debug("Consulta 1 Inicio ....")
 
     print("\nEjercicio 1: ¿Cuántas User Reviews (del csv Googleplaystore_user_reviews) tienen cada una de las Apps del "
-          "CSV GooglePlayStore?\n")  # Enunciado
+          "CSV GooglePlayStore?\n(Se ha ordenado por la columna Cant User Reviews de mayor a menor)\n")  # Enunciado
 
     # Mostramos una parte por consola
     res = colUser.aggregate([
         {'$group': {"_id": "$App", "Cant User Reviews": {'$sum': 1}}},
-        {"$sort": {"_id": 1}},
+        {"$sort": {"Cant User Reviews": -1}},
         {"$limit": 3}
     ])
     for x in res:
@@ -88,7 +88,7 @@ def consultasPracticas(mongoConn):
     # Guardamos consulta en carpeta de consultas
     cursor = colUser.aggregate([
         {'$group': {"_id": "$App", "Cant User Reviews": {'$sum': 1}}},
-        {"$sort": {"_id": 1}}
+        {"$sort": {"Cant User Reviews": -1}},
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta1.json"))  # Llamamos a función.
 
@@ -101,12 +101,16 @@ def consultasPracticas(mongoConn):
     logger.debug("Consulta 2 Inicio ....")
 
     print("\nEjercicio 2: Del User Reviews, ¿cuántos tipos de sentimientos hay y su frecuencia? Mostrar además, la "
-          "aplicación que recibe más comentarios por tipo de sentimiento.\n")  # Enunciado
+          "aplicación que recibe más comentarios por tipo de sentimiento.\n(Se ha ordenado por la columna Count de"
+          " mayor a menor.)\n")  # Enunciado
 
     # Premaramos consulta
     res = colUser.aggregate([
-        {'$group': {"_id": "$Sentiment", "Frecuencia": {'$sum': 1}, "App más frecuente": {"$max": "$App"}}},
-        {"$sort": {"_id": pymongo.DESCENDING}},
+        {"$group": {"_id": {"sentimiento": "$Sentiment", "App": "$App"}, "Frecuencia": {"$sum":1}}},
+        {"$sort": {"_id.sentimiento":1, "Frecuencia": -1}},
+        {"$group": {"_id": {"sentimiento": "$_id.sentimiento"}, "App": {"$first": "$_id.App"},
+                    "Count": {"$first": "$Frecuencia"}}},
+        {"$sort": {"Count": -1}},
         {"$limit": 3}
     ])
     # Mostramos consulta por consola
@@ -117,8 +121,11 @@ def consultasPracticas(mongoConn):
 
     # Guardamos consulta en carpeta de consultas
     cursor = colUser.aggregate([
-        {'$group': {"_id": "$Sentiment", "Frecuencia": {'$sum': 1}, "App más frecuente": {"$max": "$App"}}},
-        {"$sort": {"_id": pymongo.DESCENDING}}
+        {"$group": {"_id": {"sentimiento": "$Sentiment", "App": "$App"}, "Frecuencia": {"$sum": 1}}},
+        {"$sort": {"_id.sentimiento":1, "Frecuencia": -1}},
+        {"$group": {"_id": {"sentimiento": "$_id.sentimiento"}, "App": {"$first": "$_id.App"},
+                    "Count": {"$first": "$Frecuencia"}}},
+        {"$sort": {"Count": -1}}
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta2.json"))  # Llamamos a función.
 
@@ -131,12 +138,13 @@ def consultasPracticas(mongoConn):
     logger.debug("Consulta 3 Inicio ....")
 
     print("\nEjercicio 3: Calcular la media de Rating por categoría cuyas Reviews son mayores o iguales a "
-          "diez mil.\n")  # Enunciado
+          "diez mil.\n(Se ha ordenado por la columna avg Rating de mayor a menor.)\n")  # Enunciado
 
     # Premaramos consulta
     res = colStore.aggregate([
         {"$match" : {"Reviews" : {"$gt": 10000}}},
         {'$group': {"_id": "$Category", "avg Rating": {'$avg': "$Rating"}}},
+        {"$sort": {"avg Rating": -1}},
         {"$limit": 3}
     ])
     for x in res:
@@ -147,7 +155,8 @@ def consultasPracticas(mongoConn):
     # Guardamos consulta en carpeta de consultas
     cursor = colStore.aggregate([
         {"$match" : {"Reviews" : {"$gt": 10000}}},
-        {'$group': {"_id": "$Category", "avg Rating": {'$avg': "$Rating"}}}
+        {'$group': {"_id": "$Category", "avg Rating": {'$avg': "$Rating"}}},
+        {"$sort": {"avg Rating": -1}},
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta3.json"))  # Llamamos a función.
 
@@ -164,8 +173,9 @@ def consultasPracticas(mongoConn):
 
     # Preparamos consulta
     res = colStore.aggregate([
-        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
-        {"$limit": 3}
+        {"$addFields": {"Anio": {"$arrayElemAt": [{"$split": ["$Last Updated", "-"]}, 0]}}},
+        {"$project": {"_id": 0, "App": 1, "Anio": 1, "Last Updated": 1}},
+        {"$limit": 5}
     ])
     for x in res:
         print(x)
@@ -174,7 +184,8 @@ def consultasPracticas(mongoConn):
 
     # Guardamos consulta en carpeta de consultas
     cursor = colStore.aggregate([
-        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}}
+        {"$addFields": {"Anio": {"$arrayElemAt": [{"$split": ["$Last Updated", "-"]}, 0]}}},
+        {"$project": {"Anio": 1}}
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta4.json"))  # Llamamos a función.
 
@@ -186,12 +197,14 @@ def consultasPracticas(mongoConn):
 
     logger.debug("Consulta 5 Inicio ....")
 
-    print("\nEjercicio 5: Mostrar el número de Apps por año de actualización y la media del precio.\n")  # Enunciado
+    print("\nEjercicio 5: Mostrar el número de Apps por año de actualización y la media del precio.\n(Se ha ordenado"
+          " por la columna avg Precio de mayor a menor)\n")  # Enunciado
 
     # Preparamos consulta
     res = colStore.aggregate([
-        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
-        {"$group": {"_id": "$Fecha Separada", "avg Precio": {"$avg": "$Price"}}},
+        {"$addFields": {"Anio": {"$substr": ["$Last Updated", 0, 4]}}},
+        {"$group": {"_id": "$Anio", "avg Precio": {"$avg": "$Price"}}},
+        {"$sort": {"avg Precio": -1}},
         {"$limit": 3}
     ])
     for x in res:
@@ -201,8 +214,9 @@ def consultasPracticas(mongoConn):
 
     # Guardamos consulta en carpeta de consultas
     cursor = colStore.aggregate([
-        {"$addFields": {"Fecha separada": {"$substr": ["$Last Updated", 0, 4]}}},
-        {"$group": {"_id": "$Fecha Separada", "avg Precio": {"$avg": "$Price"}}},
+        {"$addFields": {"Anio": {"$substr": ["$Last Updated", 0, 4]}}},
+        {"$group": {"_id": "$Anio", "avg Precio": {"$avg": "$Price"}}},
+        {"$sort": {"avg Precio": -1}}
     ])  # Cursor con la consulta sin el limit
     saveQueryJson(cursor, str(config["queries"]["folder_path"] + os.sep + "consulta5.json"))  # Llamamos a función.
 
