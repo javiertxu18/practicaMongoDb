@@ -1,5 +1,6 @@
 # practicaMongoDb
-Python3 con MongoDB(3.6.23)
+
+Memoria del repositorio: https://docs.google.com/document/d/1285NdzlKsAGP1UPgqmv3LuvCifBUFohmow8yuIFzx90/edit?usp=sharing 
 
 ### Pre-requisitos
 
